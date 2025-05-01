@@ -74,6 +74,7 @@ python wine_dummy.py
 python wine_mlpxg.py
 # etc.
 ```
+Due to Optuna hyperparameter tuning, some models take a while to run completely.
 
 ## Evaluation Metrics
 
