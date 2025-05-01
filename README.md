@@ -10,7 +10,7 @@ This project focuses on predicting the quality of wine using various machine lea
 
 ## Repository Structure
 
-wine-quality/
+<pre>wine-quality/
 ├── .DS_Store
 ├── Cleaned_data_no_outliers.csv
 ├── remove_outliers.py
@@ -22,7 +22,7 @@ wine-quality/
 ├── wine_xgboost.py
 ├── curve_random.py
 ├── README.md
-└── requirements.txt
+└── requirements.txt</pre>
 
 * **.DS\_Store**: (Likely a macOS metadata file, might be good to add to `.gitignore`)
 * **`Cleaned data.csv`**: An intermediate cleaned version of the wine quality data obtained from https://github.com/You-sha/Wine-Quality-Prediction/tree/main.
