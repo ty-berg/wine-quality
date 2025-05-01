@@ -9,6 +9,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, BatchNormalization, Activation
 from tensorflow.keras.callbacks import EarlyStopping
 import optuna
+import matplotlib.pyplot as plt
 
 # Load dataset
 df = pd.read_csv("Cleaned_data_no_outliers.csv")
@@ -85,3 +86,52 @@ accuracy = accuracy_score(y_test, np.round(aug_preds)) * 100
 print(f"Hybrid Model RMSE: {rmse:.4f}")
 print(f"Hybrid Model R²: {r2:.4f}")
 print(f"Hybrid Model Accuracy (rounded): {accuracy:.2f}%")
+
+
+# Load and preprocess data
+df = pd.read_csv("Cleaned_data_no_outliers.csv")
+X = df.drop(columns=['quality'])
+y = df['quality']
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.30, random_state=42)
+
+# Box-Cox transformation on the target
+pt = PowerTransformer(method='box-cox')
+y_train_boxcox = pt.fit_transform(y_train.values.reshape(-1, 1)).flatten()
+
+# Estimator values to try
+estimator_values = [50, 100, 250, 500, 700]
+rmse_results = []
+
+for n in estimator_values:
+    model = XGBRegressor(
+        n_estimators=n,
+        max_depth=best_params.get('max_depth', 10),
+        learning_rate=best_params.get('learning_rate', 0.05),
+        subsample=best_params.get('subsample', 0.8),
+        colsample_bytree=best_params.get('colsample_bytree', 0.8),
+        reg_alpha=best_params.get('reg_alpha', 0.5),
+        reg_lambda=best_params.get('reg_lambda', 0.5),
+        objective='reg:squarederror',
+        random_state=42,
+        verbosity=0
+    )
+    model.fit(X_train, y_train_boxcox)
+    preds_boxcox = model.predict(X_test)
+    preds = pt.inverse_transform(preds_boxcox.reshape(-1, 1)).flatten()
+    rmse = np.sqrt(mean_squared_error(y_test, preds))
+    rmse_results.append(rmse)
+    print(f"n_estimators = {n}, RMSE = {rmse:.4f}")
+
+# Plot RMSE vs. n_estimators
+plt.figure(figsize=(8, 5))
+plt.plot(estimator_values, rmse_results, marker='o', linestyle='-')
+plt.xlabel("Number of Estimators")
+plt.ylabel("RMSE")
+plt.title("XGBoost Performance vs. Number of Estimators")
+plt.grid(True)
+plt.tight_layout()
+plt.show()

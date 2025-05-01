@@ -2,17 +2,18 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, confusion_matrix
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Load the dataset
-df = pd.read_csv("WineQT.csv")
+df = pd.read_csv("Cleaned_data_no_outliers.csv")
 print(df.head())
 
 # Verify that the target column 'quality' exists
 if 'quality' in df.columns:
-    X = df.drop(columns=['quality', 'Id'])
+    X = df.drop(columns=['quality'])
     y = df['quality']
 else:
     print("Error: 'quality' column not found in the dataset. Please adjust the column names accordingly.")
@@ -76,6 +77,16 @@ test_accuracy = np.mean(y_test_pred_round == y_test) * 100
 print(f"Test Accuracy (rounded): {test_accuracy:.2f}%")
 
 # Plot Actual vs. Predicted wine quality for the test set
+cm = confusion_matrix(y_test, y_test_pred_round)
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+plt.xlabel("Predicted Quality")
+plt.ylabel("Actual Quality")
+plt.title(f"Confusion Matrix for Final Model on Test Data (Acc: {test_accuracy:.2f}%)")
+plt.tight_layout()
+plt.show()
+
 plt.figure(figsize=(8,6))
 plt.scatter(y_test, y_test_pred, alpha=0.5)
 plt.plot([y.min(), y.max()], [y.min(), y.max()], '--', color='red')

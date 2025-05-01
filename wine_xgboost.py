@@ -118,12 +118,12 @@ overall_accuracy = accuracy_score(y, y_all_pred_round) * 100
 print("Overall Accuracy on all data:", overall_accuracy)
 
 # Compute the confusion matrix (comparing rounded predictions to true quality values)
-cm = confusion_matrix(y, y_all_pred_round)
+cm = confusion_matrix(y_test, y_test_pred_round)
 
 plt.figure(figsize=(8, 6))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
 plt.xlabel("Predicted Quality")
 plt.ylabel("Actual Quality")
-plt.title(f"Confusion Matrix for Final Model on All Data (Acc: {overall_accuracy:.2f}%)")
+plt.title(f"Confusion Matrix for Final Model on Test Data (Acc: {test_accuracy:.2f}%)")
 plt.tight_layout()
 plt.show()
